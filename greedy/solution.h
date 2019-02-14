@@ -17,7 +17,6 @@ class Solution {
   std::experimental::optional<Slice> ExtendSlice(
       const Slice& slice, std::experimental::optional<int> slice_idx,
       bool exit_on_first_successl);
-  std::experimental::optional<Slice> GetMinExtededSlice(const Slice& shape);
   bool CanCutFromNeightbours(const Slice& slice,
                              std::experimental::optional<int> slice_idx);
 

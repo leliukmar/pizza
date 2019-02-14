@@ -75,22 +75,12 @@ void Solution::FindFittingSlice(int row, int col) {
 
   // Try extend min shapes.
   for (const auto& shape : shapes_) {
-    if (auto slice = GetMinExtededSlice(SliceForShape(shape, row, col))) {
+    if (auto slice = ExtendSlice(SliceForShape(shape, row, col), nullopt,
+                                 true /*exit_on_first_success*/)) {
       pizza_.AddSlice(*slice);
       return;
     }
   }
-}
-
-optional<Slice> Solution::GetMinExtededSlice(const Slice& slice) {
-  if (!pizza_.PizzaContains(slice) || pizza_.SliceIsTooBig(slice) ||
-      pizza_.SliceIntersectsOther(slice, nullopt)) {
-    return nullopt;
-  }
-
-  if (pizza_.HasEnoughIngredients(slice)) return slice;
-
-  return ExtendSlice(slice, nullopt, true /*exit_on_first_success*/);
 }
 
 optional<Slice> Solution::ExtendSlice(

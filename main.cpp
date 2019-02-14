@@ -14,7 +14,7 @@ using std::experimental::nullopt;
 using std::vector;
 
 void VerifySolution(vector<vector<Cell>> initial_cells,
-                    const vector<Slice> slices, int l, int h) {
+                    const vector<Slice>& slices, int l, int h) {
   for (const auto& slice : slices) {
     if (slice.area() > h) {
       std::cout << "Verification error: too big. " << slice.ToString()
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 
   int total_cells = 0;
   for (const auto& slice : final_slices) {
-    //  std:cout << slice.ToString() << std::endl;
+    std:cout << slice.ToString() << std::endl;
     total_cells += slice.area();
   }
   std::cout << "Total cells: " << total_cells
