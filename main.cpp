@@ -15,7 +15,8 @@ using std::vector;
 
 void VerifySolution(vector<vector<Cell>> initial_cells,
                     const vector<Slice>& slices, int l, int h, int r, int c) {
-  for (const auto& slice : slices) {
+  for (int idx = 0; idx < slices.size(); ++idx) {
+    const auto& slice = slices[idx];
     if (slice.area() > h) {
       std::cout << "Verification error: too big. " << slice.ToString()
                 << std::endl;
@@ -31,9 +32,10 @@ void VerifySolution(vector<vector<Cell>> initial_cells,
       for (int j = slice.c1; j <= slice.c2; ++j) {
         if (initial_cells[i][j].slice_id) {
           std::cout << "Verification error: intersection found "
-                    << slice.ToString() << std::endl;
+                    << slice.ToString() << " and " << slices[*initial_cells[i][j].slice_id].ToString()
+                    << ", idx: " << idx << ", " << *initial_cells[i][j].slice_id << std::endl;
         } else {
-          initial_cells[i][j].slice_id = 1;
+          initial_cells[i][j].slice_id = idx;
         }
 
         if (initial_cells[i][j].val == 0) {
@@ -53,7 +55,7 @@ void VerifySolution(vector<vector<Cell>> initial_cells,
 
 int main(int argc, char** argv) {
   if (argc < 3) {
-    std::cout << "Format rror: input_file output_file" << std::endl;
+    std::cout << "Format error: input_file output_file" << std::endl;
     return -1;
   }
 
@@ -78,10 +80,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  vector<Slice> final_slices;
   greedy::Solution solution(Pizza(initial_cells, l, h));
   solution.Solve();
-  final_slices = solution.pizza().slices();
+  const auto& final_slices = solution.pizza().slices();
 
   int total_cells = 0;
   std::string result_string;

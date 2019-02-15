@@ -13,4 +13,7 @@ std::vector<Shape> CalculateShapes(int min_ingrid, int max_area);
 
 Slice SliceForShape(const Shape& shape, int row, int col);
 
+std::experimental::optional<Slice> CutSlice(const Slice& cutted_slice,
+                                            const Slice& cutting_slice);
+
 #endif  // COMMON_HELPER_FUNCTIONS_H

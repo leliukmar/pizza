@@ -1,11 +1,48 @@
 #include "helper_functions.h"
 
-#include <math.h>
 #include <algorithm>
+#include "assert.h"
 #include <iostream>
+#include <math.h>
 
+using std::experimental::nullopt;
+using std::experimental::optional;
 using std::list;
 using std::vector;
+
+namespace {
+
+optional<Slice> MakeHorizontalCut(const Slice& cutted_slice,
+                                  const Slice& cutting_slice) {
+  const bool has_proper_width = cutting_slice.c1 <= cutted_slice.c1 &&
+                                cutting_slice.c2 >= cutted_slice.c2;
+  const bool cut_top =
+      cutting_slice.r1 <= cutted_slice.r1 && cutting_slice.r2 < cutted_slice.r2;
+  const bool cut_bottom =
+      cutted_slice.r1 > cutted_slice.r1 && cutted_slice.r2 >= cutted_slice.r2;
+
+  if (!has_proper_width || !(cut_top || cut_bottom)) {
+    return nullopt;
+  }
+
+  int r1_offset = 0;
+  int r2_offset = 0;
+
+  if (cut_top) {
+    r1_offset = cutting_slice.r2 - cutted_slice.r1 + 1;
+  } else {
+    assert(cut_bottom);
+    r2_offset = cutted_slice.r2 - cutting_slice.r1 + 1;
+  }
+  return Slice{cutted_slice.r1 + r1_offset, cutted_slice.c1,
+               cutted_slice.r2 - r2_offset, cutted_slice.c2};
+}
+
+Slice Rotate(const Slice& slice) {
+  return Slice{slice.c1, slice.r1, slice.c2, slice.r2};
+}
+
+}  // namespace
 
 list<int> GetDivisors(int num) {
   list<int> divisors;
@@ -78,4 +115,16 @@ int GetCellsSum(const vector<vector<int>>& cells_sum, const Slice& slice) {
     res += cells_sum[slice.r1 - 1][slice.c1 - 1];
   }
   return res;
+}
+
+optional<Slice> CutSlice(const Slice& cutted_slice,
+                         const Slice& cutting_slice) {
+  if (auto slice = MakeHorizontalCut(cutted_slice, cutting_slice))
+    return slice;
+
+  if (auto slice =
+          MakeHorizontalCut(Rotate(cutted_slice), Rotate(cutting_slice)))
+    return Rotate(*slice);
+
+  return nullopt;
 }

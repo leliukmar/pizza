@@ -1,8 +1,10 @@
 #include "pizza.h"
 
-#include <math.h>
+#include "assert.h"
 #include <algorithm>
 #include <iostream>
+#include <math.h>
+#include <set>
 
 #include "helper_functions.h"
 
@@ -21,12 +23,7 @@ Pizza::Pizza(std::vector<std::vector<Cell>> cells, int min_ingred, int max_area)
 
 void Pizza::AddSlice(const Slice& slice) {
   slices_.push_back(slice);
-  const int idx = slices_.size() - 1;
-  for (int i = slice.r1; i <= slice.r2; ++i) {
-    for (int j = slice.c1; j <= slice.c2; ++j) {
-      cells_[i][j].slice_id = idx;
-    }
-  }
+  OccupyCellsBySlice(slices_.size() - 1);
 }
 
 void Pizza::ReplaceSlice(const Slice& new_slice, int idx) {
@@ -67,9 +64,21 @@ bool Pizza::IsValidSlice(const Slice& slice, optional<int> slice_idx) const {
 
 void Pizza::OccupyCellsBySlice(int slice_idx) {
   const Slice& slice = slices_[slice_idx];
+  std::set<int> cutted_slices;
   for (int i = slice.r1; i <= slice.r2; ++i) {
     for (int j = slice.c1; j <= slice.c2; ++j) {
+      auto existing_slice_id = cells_[i][j].slice_id;
+      if (existing_slice_id && existing_slice_id != slice_idx) {
+        cutted_slices.insert(*existing_slice_id);
+      }
       cells_[i][j].slice_id = slice_idx;
     }
+  }
+
+  for (auto cuttted_slice_id : cutted_slices) {
+    auto cutted_slice = CutSlice(slices_[cuttted_slice_id], slice);
+    // This must be taken care of by the calling functions.
+    assert(!!cutted_slice);
+    slices_[cuttted_slice_id] = *cutted_slice;
   }
 }

@@ -21,6 +21,9 @@ struct Cell {
 
 struct Slice {
   Slice(int r1, int c1, int r2, int c2);
+  bool operator==(const Slice& slice) const {
+    return r1 == slice.r1 && r2 == slice.r2 && c1 == slice.c1 && c2 == slice.c2;
+  }
 
   int width() const { return c2 - c1 + 1; }
   int height() const { return r2 - r1 + 1; }
@@ -56,7 +59,7 @@ class Pizza {
                     std::experimental::optional<int> slice_idx) const;
 
   const std::vector<Slice>& slices() const { return slices_; }
-  const std::vector<std::vector<Cell>> cells() const { return cells_; }
+  const std::vector<std::vector<Cell>>& cells() const { return cells_; }
   int rows() const { return cells_.size(); }
   int columns() const { return cells_[0].size(); }
   int min_ingred() const { return min_ingred_; }
