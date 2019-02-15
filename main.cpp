@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     result_string += slice.ToString() + "\n";
     total_cells += slice.area();
   }
-  output << total_cells << std::endl;
+  output << final_slices.size() << std::endl;
   output << result_string;
 
   std::cout << "Total cells: " << total_cells
