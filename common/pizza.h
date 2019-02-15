@@ -27,8 +27,8 @@ struct Slice {
   int area() const { return (r2 - r1 + 1) * (c2 - c1 + 1); }
 
   std::string ToString() const {
-    return "(" + std::to_string(r1) + ", " + std::to_string(c1) + ", " +
-           std::to_string(r2) + ", " + std::to_string(c2) + ").";
+    return std::to_string(r1) + " " + std::to_string(c1) + " " +
+           std::to_string(r2) + " " + std::to_string(c2);
   }
 
   int r1, c1, r2, c2;

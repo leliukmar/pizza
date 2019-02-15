@@ -14,11 +14,15 @@ using std::experimental::nullopt;
 using std::vector;
 
 void VerifySolution(vector<vector<Cell>> initial_cells,
-                    const vector<Slice>& slices, int l, int h) {
+                    const vector<Slice>& slices, int l, int h, int r, int c) {
   for (const auto& slice : slices) {
     if (slice.area() > h) {
       std::cout << "Verification error: too big. " << slice.ToString()
                 << std::endl;
+    }
+
+    if (slice.r1 < 0 || slice.r2 >= r || slice.c1 < 0 || slice.c2 >= c) {
+      std::cout << "Verification error: slice is outside pizza bounds." << std::endl;
     }
 
     int tomato = 0;
@@ -48,12 +52,13 @@ void VerifySolution(vector<vector<Cell>> initial_cells,
 }
 
 int main(int argc, char** argv) {
-  if (argc < 2) {
-    std::cout << "Format rror: <input_file> --[greedy|graph]" << std::endl;
+  if (argc < 3) {
+    std::cout << "Format rror: input_file output_file" << std::endl;
     return -1;
   }
 
   std::ifstream input(argv[1]);
+  std::ofstream output(argv[2]);
   int r, c, l, h;
   input >> r >> c >> l >> h;
 
@@ -74,24 +79,23 @@ int main(int argc, char** argv) {
   }
 
   vector<Slice> final_slices;
-  if (argc == 3 && argv[2] == std::string("--graph")) {
-    // graph::Solution solution(Pizza(initial_cells, l, h));
-    // solution.solve();
-  } else {
-    greedy::Solution solution(Pizza(initial_cells, l, h));
-    solution.solve();
-    final_slices = solution.pizza().slices();
-  }
+  greedy::Solution solution(Pizza(initial_cells, l, h));
+  solution.Solve();
+  final_slices = solution.pizza().slices();
 
   int total_cells = 0;
+  std::string result_string;
   for (const auto& slice : final_slices) {
-    std:cout << slice.ToString() << std::endl;
+    result_string += slice.ToString() + "\n";
     total_cells += slice.area();
   }
+  output << total_cells << std::endl;
+  output << result_string;
+
   std::cout << "Total cells: " << total_cells
             << ", slices num = " << final_slices.size() << std::endl;
 
-  VerifySolution(initial_cells, final_slices, l, h);
+  VerifySolution(initial_cells, final_slices, l, h, r, c);
 
   return 0;
 }
